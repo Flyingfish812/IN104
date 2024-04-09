@@ -1,44 +1,28 @@
-# Compiler to use
-CC = gcc
+# Compiler
+CC=gcc
+# Compiler Flags
+CFLAGS=-Iinclude
 
-# Compiler flags, -I adds the include directory to the search path for header files
-CFLAGS = -Wall -Iinclude
+# Find all .c files in the src directory
+SRCS=$(wildcard src/*.c)
 
-# Final output binary name
-OUTPUT = main.exe
+# Object files to build
+OBJS=$(SRCS:.c=.o) main.o
 
-# Directories
-SRC_DIR = source
-OBJ_DIR = obj
-INC_DIR = include
-
-# Source files (excluding main.c)
-SOURCES = $(wildcard $(SRC_DIR)/*.c)
-
-# Object files (derived from SOURCES, placed in OBJ_DIR)
-OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
-
-# Object file for main.c (assuming main.c is in the root)
-MAIN_OBJ = $(OBJ_DIR)/main.o
+# Executable name
+EXEC=main.exe
 
 # Default target
-all: $(OUTPUT)
+all: $(EXEC)
 
-# Link object files into a binary
-$(OUTPUT): $(MAIN_OBJ) $(OBJECTS)
-	$(CC) $(CFLAGS) $^ -o $@
+$(EXEC): $(OBJS)
+	$(CC) -o $@ $^
 
-# Compile main.c into its object file
-$(MAIN_OBJ): main.c
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Compile .c files in SRC_DIR into .o files in OBJ_DIR
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Clean up
+# Clean
 clean:
-	rm -rf $(OBJ_DIR) $(OUTPUT)
+	del /Q src\*.o *.o $(EXEC)
 
-# Prevent make from doing something with a file named all or clean
 .PHONY: all clean
