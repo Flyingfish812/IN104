@@ -20,7 +20,8 @@ enum terrain{
     wall,
     known,
     goal,
-    crumb
+    crumb,
+    end
 };
 
 enum action{

@@ -145,7 +145,7 @@ void alloc_visited()
     visited = malloc(rows * sizeof(int*));
     int i;
     for (i = 0; i < rows; ++i){
-            visited[i] = malloc(cols * sizeof(int*));
+        visited[i] = malloc(cols * sizeof(int*));
     }
 }
 

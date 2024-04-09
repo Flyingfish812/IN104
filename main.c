@@ -47,6 +47,7 @@ int main(){
     // Read the maze file
     // Set the variables: mazeEnv, rows, cols, start_row, start_col, goal_row, goal_col
     mazeEnv_make("data/maze.txt");
+    init_visited();
     
     // Seed the random number generator
     srand(time(NULL));
@@ -58,18 +59,22 @@ int main(){
     double*** qValues = createQValuesTable(maze.rows, maze.cols);
 
     // Train the model using Q-learning
-    for (int episode = 0; episode < 1000; ++episode) {
+    for (int episode = 0; episode < 10; ++episode) {
         int currentState[2] = {maze.start.row, maze.start.col};
         int done = 0;
+        int step = 0;
+        printf("Episode %d\n", episode);
 
-        while (!done) {
+        while (!done || step < 10000) {
             int action = chooseAction(currentState[0], currentState[1], qValues);
             int nextState[2];
             double reward;
-            stepEnvironment(&maze, currentState, action, nextState, &reward, &done);
+            stepEnvironment(&maze, visited, currentState, action, nextState, &reward, &done);
             updateQValue(qValues, currentState, action, nextState, reward, done);
             currentState[0] = nextState[0];
             currentState[1] = nextState[1];
+            // printf("(%d, %d) -> ", currentState[0], currentState[1]);
+            step++;
         }
     }
 
@@ -77,14 +82,22 @@ int main(){
     printf("Solution Path:\n");
     int currentState[2] = {maze.start.row, maze.start.col};
     int steps = 0;
+    int failed = 0;
     while (maze.mazeEnv[currentState[0]][currentState[1]] != 'g' && steps < maze.rows * maze.cols) {
         int action = chooseAction(currentState[0], currentState[1], qValues);
         printf("(%d, %d) -> ", currentState[0], currentState[1]);
         currentState[0] += directions[action][0];
         currentState[1] += directions[action][1];
         steps++;
+        if(currentState[0] >= maze.rows || currentState[0] < 0 || currentState[1] >= maze.cols || currentState[1] < 0){
+            int failed = 1;
+            break;
+        }
     }
     printf("(%d, %d)\n", currentState[0], currentState[1]);
+    if(failed){
+        printf("Failed to find a solution.\n");
+    }
 
     freeQValuesTable(qValues, maze.rows, maze.cols);
 
