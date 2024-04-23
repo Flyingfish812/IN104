@@ -1,8 +1,9 @@
 #include "mazeEnv.h"
+#include <float.h>
 #define NUM_ACTIONS 4 // Assuming 4 possible actions: up, down, left, right
 #define ALPHA 0.1     // Learning rate
 #define GAMMA 0.9     // Discount factor
-#define EPSILON 0.3   // For ε-greedy strategy
+#define EPSILON 0.9   // For ε-greedy strategy
 
 extern int directions[4][2];
 
@@ -19,15 +20,15 @@ typedef struct {
     Position goal;
 } Maze;
 
-int chooseAction(int row, int col, double qValues[row][col][NUM_ACTIONS]);
+int chooseAction(int row, int col, double*** qValues, Maze maze, double epsilon);
 
-double*** createQValuesTable(int rows, int cols);
+double*** createQValuesTable(int rows, int cols, Maze maze);
 
 void freeQValuesTable(double*** qValues, int rows, int cols);
 
-void updateQValue(double qValues[rows][cols][NUM_ACTIONS], int currentState[2], int action, int nextState[2], double reward, int done);
+void updateQValue(double*** qValues, int currentState[2], int action, int nextState[2], double reward, int done);
 
-void stepEnvironment(Maze* maze, int** visited, int currentState[2], int action, int nextState[2], double* reward, int* done);
+void stepEnvironment(Maze maze, int** visited, int currentState[2], int action, int nextState[2], double* reward, int* done);
 
-void qLearning(Maze maze, double qValues[rows][cols][NUM_ACTIONS]);
+void qLearning(Maze maze, double*** qValues, int EPS);
 

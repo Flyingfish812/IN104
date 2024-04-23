@@ -10,7 +10,7 @@ SRCS=$(wildcard src/*.c)
 OBJS=$(SRCS:.c=.o) main.o
 
 # Executable name
-EXEC=main.exe
+EXEC=main
 
 # Default target
 all: $(EXEC)
@@ -23,6 +23,6 @@ $(EXEC): $(OBJS)
 
 # Clean
 clean:
-	del /Q src\*.o *.o $(EXEC)
+	rm -rf src\*.o *.o $(EXEC)
 
 .PHONY: all clean
