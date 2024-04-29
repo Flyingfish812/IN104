@@ -21,6 +21,7 @@
 #include "dfs.h"
 #include "functions.h"
 
+// Default function used to find the solution
 void apply_dfs(){
     init_visited();
     printf("%d, %d \n", rows, cols);
@@ -31,6 +32,7 @@ void apply_dfs(){
     mazeEnv_render();
 }
 
+// Build the maze, using a customized structure
 Maze build_maze(){
     Maze maze;
     Position start = {start_row, start_col};
@@ -60,9 +62,10 @@ int main(){
 
     // Train the model using Q-learning
     qLearning(maze, qValues, 1000);
-    mazeEnv_render();
+    // mazeEnv_render();
 
     // Use the trained Q-values to find and print the solution
+    // Expected solution: start from (6,3) and end at (6,14)
     printf("Solution Path:\n");
     int currentState[2] = {maze.start.row, maze.start.col};
     int steps = 0;
@@ -83,7 +86,8 @@ int main(){
         printf("Failed to find a solution.\n");
     }
 
-    freeQValuesTable(qValues, 12, 20);
+    // Free the memory allocated for the Q-values
+    freeQValuesTable(qValues, rows, cols);
 
     return 0;
 }
