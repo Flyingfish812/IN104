@@ -1,6 +1,7 @@
 #include "dfs.h"
 
 // Deep first search algorithm to verify the solution
+
 int dfs(int row, int col){
     int* current = &visited[row][col];
 

@@ -4,7 +4,7 @@ CC=gcc
 CFLAGS=-Iinclude
 
 # Find all .c files in the src directory
-SRCS=$(wildcard src\*.c)
+SRCS=$(wildcard src/*.c)
 
 # Object files to build
 OBJS=$(SRCS:.c=.o) main.o
@@ -23,6 +23,6 @@ $(EXEC): $(OBJS)
 
 # Clean
 clean:
-	rm -rf src\*.o *.o $(EXEC)
+	rm -rf src/*.o *.o $(EXEC)
 
 .PHONY: all clean

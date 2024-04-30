@@ -19,7 +19,6 @@
 #include <time.h>
 #include "utils.h"
 #include "dfs.h"
-#include "functions.h"
 
 // Default function used to find the solution
 void apply_dfs(){

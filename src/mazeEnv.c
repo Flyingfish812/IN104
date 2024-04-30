@@ -1,16 +1,19 @@
 #include "mazeEnv.h"
-#include "functions.h"
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
 
-char** mazeEnv;  // The list that stores the maze
-int** visited;
+//  This file helps to realise the interactive and dynamic manipulation of a maze environment, enabling actions, tracking movements, and visualizing the state of the maze during navigation.
+
+char** mazeEnv;  // A two-dimensional array of characters that stores the layout of the maze.
+int** visited;  // A two-dimensional array of integers that tracks whether each position in the maze has been visited.
 int rows;
-int cols;
+int cols;  // Indicates the number of rows and columns in the maze.
 int start_row;
-int start_col;
+int start_col;  // The row and column of the starting position in the maze.
 int state_row;
-int state_col;
+int state_col;  // The row and column of the current state.
 int goal_row;
-int goal_col;
+int goal_col;  // The row and column of the goal position.
 
 // Allocate a memory for the maze
 void alloc_mazeEnv(){
@@ -107,7 +110,7 @@ void mazeEnv_reset(){
     state_col = start_col;
 }
 
-// Faire une action & observer récompense et où on se trouve
+// Execute a given action, update the navigator's position in the maze, assign rewards, and determine if the goal is reached
 envOutput mazeEnv_step(action a){
     int reward = 0;
     int done = 0;
