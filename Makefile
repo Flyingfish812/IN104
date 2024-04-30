@@ -23,6 +23,10 @@ $(EXEC): $(OBJS)
 
 # Clean
 clean:
+<<<<<<< HEAD
 	rm -rf src/*.o *.o $(EXEC)
+=======
+	rm -rf src\*.o *.o $(EXEC)
+>>>>>>> 56d79b6a46d45548f191233a9f0c4367e038c46d
 
 .PHONY: all clean

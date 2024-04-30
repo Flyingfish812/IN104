@@ -1,6 +1,7 @@
 /*  File description
 *   In this project some global variables are predefined and will be used directly, they are:
 *   --------------------------------------------------
+<<<<<<< HEAD
 *   char** mazeEnv;  // A two-dimensional array of characters that stores the layout of the maze.
 *   int** visited;  // A two-dimensional array of integers that tracks whether each position in the maze has been visited.
 *   int rows;
@@ -11,6 +12,18 @@
 *   int state_col;  // The row and column of the current state.
 *   int goal_row;
 *   int goal_col;  // The row and column of the goal position.
+=======
+*   char** mazeEnv;  // The list that stores the maze
+*   int** visited;
+*   int rows;
+*   int cols;
+*   int start_row;
+*   int start_col;
+*   int state_row;
+*   int state_col;
+*   int goal_row;
+*   int goal_col;
+>>>>>>> 56d79b6a46d45548f191233a9f0c4367e038c46d
 *   --------------------------------------------------
 *   You may reference them in the file mazeEnv.h
 */
@@ -19,6 +32,10 @@
 #include <time.h>
 #include "utils.h"
 #include "dfs.h"
+<<<<<<< HEAD
+=======
+#include "functions.h"
+>>>>>>> 56d79b6a46d45548f191233a9f0c4367e038c46d
 
 // Default function used to find the solution
 void apply_dfs(){
@@ -66,11 +83,17 @@ int main(){
     // Use the trained Q-values to find and print the solution
     // Expected solution: start from (6,3) and end at (6,14)
     printf("Solution Path:\n");
+<<<<<<< HEAD
 
     int currentState[2] = {maze.start.row, maze.start.col};
     int steps = 0;
     int failed = 0;
 
+=======
+    int currentState[2] = {maze.start.row, maze.start.col};
+    int steps = 0;
+    int failed = 0;
+>>>>>>> 56d79b6a46d45548f191233a9f0c4367e038c46d
     while (maze.mazeEnv[currentState[0]][currentState[1]] != 'g' && steps < maze.rows * maze.cols / 2) {
         int action = chooseAction(currentState[0], currentState[1], qValues, maze, 0);
         printf("(%d, %d) -> ", currentState[0], currentState[1]);
@@ -82,9 +105,13 @@ int main(){
             break;
         }
     }
+<<<<<<< HEAD
 
     printf("(%d, %d)\n", currentState[0], currentState[1]);
 
+=======
+    printf("(%d, %d)\n", currentState[0], currentState[1]);
+>>>>>>> 56d79b6a46d45548f191233a9f0c4367e038c46d
     if(failed){
         printf("Failed to find a solution.\n");
     }

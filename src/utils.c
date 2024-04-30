@@ -3,12 +3,19 @@
 #include <time.h>
 #include "utils.h"
 
+<<<<<<< HEAD
 // This file provides the necessary computational tools and functions to perform actions, learn from them, update policies, and manage the maze environment effectively.
 
 // Actions: 0-up, 1-right, 2-down, 3-left
 int directions[4][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
 // Function to choose an action using ¦Å-greedy strategy 
+=======
+// Actions: 0-up, 1-right, 2-down, 3-left
+int directions[4][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+
+// Function to choose an action using Îµ-greedy strategy 
+>>>>>>> 56d79b6a46d45548f191233a9f0c4367e038c46d
 int chooseAction(int row, int col, double*** qValues, Maze maze, double epsilon) {
     int availableActions[NUM_ACTIONS] = {-1};
     int numAvailableActions = 0;
