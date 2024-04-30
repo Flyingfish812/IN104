@@ -1,21 +1,4 @@
 #include "mazeEnv.h"
-<<<<<<< HEAD
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#define min(a, b) ((a) < (b) ? (a) : (b))
-
-//  This file helps to realise the interactive and dynamic manipulation of a maze environment, enabling actions, tracking movements, and visualizing the state of the maze during navigation.
-
-char** mazeEnv;  // A two-dimensional array of characters that stores the layout of the maze.
-int** visited;  // A two-dimensional array of integers that tracks whether each position in the maze has been visited.
-int rows;
-int cols;  // Indicates the number of rows and columns in the maze.
-int start_row;
-int start_col;  // The row and column of the starting position in the maze.
-int state_row;
-int state_col;  // The row and column of the current state.
-int goal_row;
-int goal_col;  // The row and column of the goal position.
-=======
 #include "functions.h"
 
 char** mazeEnv;  // The list that stores the maze
@@ -28,7 +11,6 @@ int state_row;
 int state_col;
 int goal_row;
 int goal_col;
->>>>>>> 56d79b6a46d45548f191233a9f0c4367e038c46d
 
 // Allocate a memory for the maze
 void alloc_mazeEnv(){
@@ -125,11 +107,7 @@ void mazeEnv_reset(){
     state_col = start_col;
 }
 
-<<<<<<< HEAD
-// Execute a given action, update the navigator's position in the maze, assign rewards, and determine if the goal is reached
-=======
 // Faire une action & observer récompense et où on se trouve
->>>>>>> 56d79b6a46d45548f191233a9f0c4367e038c46d
 envOutput mazeEnv_step(action a){
     int reward = 0;
     int done = 0;
@@ -158,18 +136,12 @@ envOutput mazeEnv_step(action a){
     return stepOut;
 }
 
-<<<<<<< HEAD
 // Randomly select and return an action from the available set
-=======
->>>>>>> 56d79b6a46d45548f191233a9f0c4367e038c46d
 action env_action_sample(){
     return (enum action)(rand() % number_actions);
 }
 
-<<<<<<< HEAD
 // Allocate memory for the "visited" array
-=======
->>>>>>> 56d79b6a46d45548f191233a9f0c4367e038c46d
 void alloc_visited()
 {
     visited = malloc(rows * sizeof(int*));
@@ -179,11 +151,7 @@ void alloc_visited()
     }
 }
 
-<<<<<<< HEAD
 // Initialize the "visited" array
-=======
-
->>>>>>> 56d79b6a46d45548f191233a9f0c4367e038c46d
 void init_visited()
 {
     alloc_visited();
@@ -202,10 +170,7 @@ void init_visited()
     }
 }
 
-<<<<<<< HEAD
 // Updates the maze by marking paths visited by the navigator
-=======
->>>>>>> 56d79b6a46d45548f191233a9f0c4367e038c46d
 void add_crumbs(){
     for (int i=0; i<rows; i++){
         for (int j=0; j<cols; j++){
