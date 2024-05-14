@@ -49,6 +49,7 @@ int main(){
     // Set the variables: mazeEnv, rows, cols, start_row, start_col, goal_row, goal_col
     mazeEnv_make("data/maze.txt");
     init_visited();
+    clock_t start, end;
     
     // Seed the random number generator
     srand(time(NULL));
@@ -57,13 +58,19 @@ int main(){
     Maze maze = build_maze();
 
     // Initialize Q-values
-    double*** qValues = createQValuesTable(maze.rows, maze.cols, maze);
+    // double*** qValues = createQValuesTable(maze.rows, maze.cols, maze);
+    double*** qValues1 = createQValuesTable(maze.rows, maze.cols, maze);
+    double*** qValues2 = createQValuesTable(maze.rows, maze.cols, maze);
 
     // Train the model using Q-learning
+    int epochs = 1000;
+    start = clock();
     // int* log = qLearning(maze, qValues, 1000);
-    
-    int* log = sarsaLearning(maze, qValues, 1000);
-    exportToFile(log, 1000, "Result.txt");
+    // int* log = sarsaLearning(maze, qValues, epochs);
+    int* log = doubleQLearning(maze, qValues1, qValues2, epochs);
+    end = clock();
+    exportToFile(log, epochs, "Result.txt");
+    printf("Time taken: %f seconds\n", (double)(end - start) / CLOCKS_PER_SEC);
     // mazeEnv_render();
 
     // Use the trained Q-values to find and print the solution
@@ -75,7 +82,8 @@ int main(){
     int failed = 0;
 
     while (maze.mazeEnv[currentState[0]][currentState[1]] != 'g' && steps < maze.rows * maze.cols / 2) {
-        int action = chooseAction(currentState[0], currentState[1], qValues, maze, 0);
+        // int action = chooseAction(currentState[0], currentState[1], qValues, maze, 0);
+        int action = chooseDoubleAction(currentState[0], currentState[1], qValues1, qValues2, maze, 0);
         printf("(%d, %d) -> ", currentState[0], currentState[1]);
         currentState[0] += directions[action][0];
         currentState[1] += directions[action][1];
@@ -94,7 +102,8 @@ int main(){
     }
 
     // Free the memory allocated for the Q-values
-    freeQValuesTable(qValues, rows, cols);
+    freeQValuesTable(qValues1, rows, cols);
+    freeQValuesTable(qValues2, rows, cols);
 
     return 0;
 }

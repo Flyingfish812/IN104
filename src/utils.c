@@ -53,6 +53,50 @@ int chooseAction(int row, int col, double*** qValues, Maze maze, double epsilon)
     return -1; // No available actions
 }
 
+int chooseDoubleAction(int row, int col, double*** qValues1, double*** qValues2, Maze maze, double epsilon) {
+    int availableActions[NUM_ACTIONS] = {-1};
+    int numAvailableActions = 0;
+
+    // Find the available actions
+    for (int a = 0; a < NUM_ACTIONS; ++a) {
+        int nextRow = row + directions[a][0];
+        int nextCol = col + directions[a][1];
+        if(nextRow >= maze.rows || nextRow < 0 || nextCol >= maze.cols || nextCol < 0){
+            continue;
+        }
+        if (maze.mazeEnv[nextRow][nextCol] != '+') {
+            availableActions[numAvailableActions] = a;
+            numAvailableActions++;
+        }
+    }
+
+    // If available
+    if (numAvailableActions > 0) {
+        // Choose a random action with probability EPSILON
+        if(numAvailableActions == 1){
+            return availableActions[0];
+        }
+        if ((double)rand() / RAND_MAX < epsilon) {
+            int randomIndex = rand() % numAvailableActions;
+            return availableActions[randomIndex];
+        }
+
+        // Otherwise, choose the action with the highest Q-value
+        int bestAction = availableActions[0];
+        double maxQValue = qValues1[row][col][bestAction] + qValues2[row][col][bestAction];
+        for (int i = 1; i < numAvailableActions; ++i) {
+            int action = availableActions[i];
+            if (qValues1[row][col][action] + qValues2[row][col][action] > maxQValue) {
+                maxQValue = qValues1[row][col][action] + qValues2[row][col][action];
+                bestAction = action;
+            }
+        }
+        return bestAction;
+    }
+
+    return -1; // No available actions
+}
+
 // Function to dynamically allocate and initialize the Q-value table
 double*** createQValuesTable(int rows, int cols, Maze maze) {
     // Allocate memory for the table of pointers to 2D arrays
@@ -107,6 +151,36 @@ void updateQValueSARSA(double*** qValues, int currentState[2], int action, int n
     // SARSA update formula
     double qValueUpdate = qValueCurrent + ALPHA * (reward + GAMMA * qValueNext - qValueCurrent);
     qValues[currentRow][currentCol][action] = qValueUpdate;
+}
+
+void updateDoubleQValue(double*** qValues1, double*** qValues2, int currentState[2], int action, int nextState[2], double reward) {
+    int currentRow = currentState[0];
+    int currentCol = currentState[1];
+    double maxQNextState1 = qValues1[nextState[0]][nextState[1]][0];
+    for (int a = 1; a < NUM_ACTIONS; ++a) {
+        if (qValues1[nextState[0]][nextState[1]][a] > maxQNextState1) {
+            maxQNextState1 = qValues1[nextState[0]][nextState[1]][a];
+        }
+    }
+    double maxQNextState2 = qValues2[nextState[0]][nextState[1]][0];
+    for (int a = 1; a < NUM_ACTIONS; ++a) {
+        if (qValues2[nextState[0]][nextState[1]][a] > maxQNextState2) {
+            maxQNextState2 = qValues2[nextState[0]][nextState[1]][a];
+        }
+    }
+    double qValueCurrent1 = qValues1[currentRow][currentCol][action];
+    double qValueCurrent2 = qValues2[currentRow][currentCol][action];
+    int updateNum = rand() % 2;
+    if(updateNum == 0){
+        // Double DQN update formula
+        double qValueUpdate = qValueCurrent1 + ALPHA * (reward + GAMMA * maxQNextState2 - qValueCurrent1);
+        qValues1[currentRow][currentCol][action] = qValueUpdate;
+    }
+    else{
+        // Double DQN update formula
+        double qValueUpdate = qValueCurrent2 + ALPHA * (reward + GAMMA * maxQNextState1 - qValueCurrent2);
+        qValues2[currentRow][currentCol][action] = qValueUpdate;
+    }
 }
 
 // Update the agent's state based on the action and calculate the reward
@@ -207,6 +281,38 @@ int* sarsaLearning(Maze maze, double*** qValues, int EPS) {
             stepEnvironment(maze, visited, currentState, action, nextState, &reward, &done);
             nextAction = chooseAction(nextState[0], nextState[1], qValues, maze, epsilon);
             updateQValueSARSA(qValues, currentState, action, nextState, reward, nextAction);
+            currentState[0] = nextState[0];
+            currentState[1] = nextState[1];
+            // printf("(%d, %d) -> ", currentState[0], currentState[1]);
+            step++;
+        }
+        log[episode] = step;
+    }
+
+    return log;
+}
+
+int* doubleQLearning(Maze maze, double*** qValues1, double*** qValues2, int EPS) {
+    int* log = (int*)malloc(sizeof(int) * EPS);
+    srand(time(NULL)); // For random number generation
+    int done, step, action, nextAction;
+    double reward;
+    int nextState[2];
+
+    // Main loop for Q-learning (simplified for illustration)
+    for (int episode = 0; episode < EPS; ++episode) {
+        int currentState[2] = {start_row, start_col};
+        double epsilon = EPSILON * (1 - (double)episode / EPS); // Decrease epsilon as episodes progress
+        done = 0;
+        step = 0;
+        
+        while (!done && step < 10000) {
+            reward = 0.0;
+            nextState[0] = currentState[0];
+            nextState[1] = currentState[1];
+            action = chooseDoubleAction(currentState[0], currentState[1], qValues1, qValues2, maze, epsilon);
+            stepEnvironment(maze, visited, currentState, action, nextState, &reward, &done);
+            updateDoubleQValue(qValues1, qValues2, currentState, action, nextState, reward);
             currentState[0] = nextState[0];
             currentState[1] = nextState[1];
             // printf("(%d, %d) -> ", currentState[0], currentState[1]);

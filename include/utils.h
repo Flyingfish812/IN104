@@ -22,6 +22,8 @@ typedef struct {
 
 int chooseAction(int row, int col, double*** qValues, Maze maze, double epsilon);
 
+int chooseDoubleAction(int row, int col, double*** qValues1, double*** qValues2, Maze maze, double epsilon);
+
 double*** createQValuesTable(int rows, int cols, Maze maze);
 
 void freeQValuesTable(double*** qValues, int rows, int cols);
@@ -30,6 +32,8 @@ void updateQValue(double*** qValues, int currentState[2], int action, int nextSt
 
 void updateQValueSARSA(double*** qValues, int currentState[2], int action, int nextState[2], double reward, int nextAction);
 
+void updateDoubleQValue(double*** qValues1, double*** qValues2, int currentState[2], int action, int nextState[2], double reward);
+
 void stepEnvironment(Maze maze, int** visited, int currentState[2], int action, int nextState[2], double* reward, int* done);
 
 int* qLearning(Maze maze, double*** qValues, int EPS);
@@ -37,3 +41,5 @@ int* qLearning(Maze maze, double*** qValues, int EPS);
 int* sarsaLearning(Maze maze, double*** qValues, int EPS);
 
 void exportToFile(int* list, int size, const char* filename);
+
+int* doubleQLearning(Maze maze, double*** qValues1, double*** qValues2, int EPS);
