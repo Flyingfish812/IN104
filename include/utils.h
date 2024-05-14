@@ -26,9 +26,14 @@ double*** createQValuesTable(int rows, int cols, Maze maze);
 
 void freeQValuesTable(double*** qValues, int rows, int cols);
 
-void updateQValue(double*** qValues, int currentState[2], int action, int nextState[2], double reward, int done);
+void updateQValue(double*** qValues, int currentState[2], int action, int nextState[2], double reward);
+
+void updateQValueSARSA(double*** qValues, int currentState[2], int action, int nextState[2], double reward, int nextAction);
 
 void stepEnvironment(Maze maze, int** visited, int currentState[2], int action, int nextState[2], double* reward, int* done);
 
 void qLearning(Maze maze, double*** qValues, int EPS);
 
+int* sarsaLearning(Maze maze, double*** qValues, int EPS);
+
+void exportToFile(int* list, int size, const char* filename);

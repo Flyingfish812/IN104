@@ -8,7 +8,7 @@
 // Actions: 0-up, 1-right, 2-down, 3-left
 int directions[4][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
-// Function to choose an action using ¦Å-greedy strategy 
+// Function to choose an action using ï¿½ï¿½-greedy strategy 
 int chooseAction(int row, int col, double*** qValues, Maze maze, double epsilon) {
     int availableActions[NUM_ACTIONS] = {-1};
     int numAvailableActions = 0;
@@ -81,16 +81,32 @@ void freeQValuesTable(double*** qValues, int rows, int cols) {
 }
 
 // Function to update the Q-value
-void updateQValue(double*** qValues, int currentState[2], int action, int nextState[2], double reward, int done) {
+void updateQValue(double*** qValues, int currentState[2], int action, int nextState[2], double reward) {
+    int currentRow = currentState[0];
+    int currentCol = currentState[1];
     double maxQNextState = qValues[nextState[0]][nextState[1]][0];
     for (int a = 1; a < NUM_ACTIONS; ++a) {
         if (qValues[nextState[0]][nextState[1]][a] > maxQNextState) {
             maxQNextState = qValues[nextState[0]][nextState[1]][a];
         }
     }
-    double qValueCurrent = qValues[currentState[0]][currentState[1]][action];
+    double qValueCurrent = qValues[currentRow][currentCol][action];
     double qValueUpdate = qValueCurrent + ALPHA * (reward + GAMMA * maxQNextState - qValueCurrent);
-    qValues[currentState[0]][currentState[1]][action] = qValueUpdate;
+    qValues[currentRow][currentCol][action] = qValueUpdate;
+}
+
+void updateQValueSARSA(double*** qValues, int currentState[2], int action, int nextState[2], double reward, int nextAction) {
+    int currentRow = currentState[0];
+    int currentCol = currentState[1];
+    int nextRow = nextState[0];
+    int nextCol = nextState[1];
+
+    double qValueCurrent = qValues[currentRow][currentCol][action];
+    double qValueNext = qValues[nextRow][nextCol][nextAction];
+
+    // SARSA update formula
+    double qValueUpdate = qValueCurrent + ALPHA * (reward + GAMMA * qValueNext - qValueCurrent);
+    qValues[currentRow][currentCol][action] = qValueUpdate;
 }
 
 // Update the agent's state based on the action and calculate the reward
@@ -155,14 +171,59 @@ void qLearning(Maze maze, double*** qValues, int EPS) {
             nextState[1] = currentState[1];
             action = chooseAction(currentState[0], currentState[1], qValues, maze, epsilon);
             stepEnvironment(maze, visited, currentState, action, nextState, &reward, &done);
-            updateQValue(qValues, currentState, action, nextState, reward, done);
+            updateQValue(qValues, currentState, action, nextState, reward);
             currentState[0] = nextState[0];
             currentState[1] = nextState[1];
             // printf("(%d, %d) -> ", currentState[0], currentState[1]);
             step++;
         }
     }
-
-    // After learning, use qValues for decision making or further processing
 }
 
+// Main Q-learning function
+int* sarsaLearning(Maze maze, double*** qValues, int EPS) {
+    int* log = (int*)malloc(sizeof(int) * EPS);
+    srand(time(NULL)); // For random number generation
+    int done, step, action, nextAction;
+    double reward;
+    int nextState[2];
+
+    // Main loop for Q-learning (simplified for illustration)
+    for (int episode = 0; episode < EPS; ++episode) {
+        int currentState[2] = {start_row, start_col};
+        double epsilon = EPSILON * (1 - (double)episode / EPS); // Decrease epsilon as episodes progress
+        done = 0;
+        step = 0;
+        
+        while (!done && step < 10000) {
+            reward = 0.0;
+            nextState[0] = currentState[0];
+            nextState[1] = currentState[1];
+            action = chooseAction(currentState[0], currentState[1], qValues, maze, epsilon);
+            stepEnvironment(maze, visited, currentState, action, nextState, &reward, &done);
+            nextAction = chooseAction(nextState[0], nextState[1], qValues, maze, epsilon);
+            updateQValueSARSA(qValues, currentState, action, nextState, reward, nextAction);
+            currentState[0] = nextState[0];
+            currentState[1] = nextState[1];
+            // printf("(%d, %d) -> ", currentState[0], currentState[1]);
+            step++;
+        }
+        log[episode] = step;
+    }
+
+    return log;
+}
+
+void exportToFile(int* list, int size, const char* filename) {
+    FILE* file = fopen(filename, "w"); // Open the file for writing
+    if (file == NULL) {
+        printf("Failed to open file");
+        return;
+    }
+
+    for (int i = 0; i < size; i++) {
+        fprintf(file, "%d\n", list[i]); // Write each integer to the file with a newline
+    }
+
+    fclose(file); // Close the file
+}

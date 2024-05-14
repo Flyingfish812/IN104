@@ -60,7 +60,10 @@ int main(){
     double*** qValues = createQValuesTable(maze.rows, maze.cols, maze);
 
     // Train the model using Q-learning
-    qLearning(maze, qValues, 1000);
+    // qLearning(maze, qValues, 1000);
+    
+    int* log = sarsaLearning(maze, qValues, 1000);
+    exportToFile(log, 1000, "Result.txt");
     // mazeEnv_render();
 
     // Use the trained Q-values to find and print the solution
@@ -84,6 +87,7 @@ int main(){
     }
 
     printf("(%d, %d)\n", currentState[0], currentState[1]);
+    printf("Finished solving in %d steps.\n", steps);
 
     if(failed){
         printf("Failed to find a solution.\n");
