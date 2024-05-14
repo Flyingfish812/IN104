@@ -152,7 +152,8 @@ void stepEnvironment(Maze maze, int** visited, int currentState[2], int action, 
 }
 
 // Main Q-learning function
-void qLearning(Maze maze, double*** qValues, int EPS) {
+int* qLearning(Maze maze, double*** qValues, int EPS) {
+    int* log = (int*)malloc(sizeof(int) * EPS);
     srand(time(NULL)); // For random number generation
     int done, step, action;
     double reward;
@@ -177,10 +178,13 @@ void qLearning(Maze maze, double*** qValues, int EPS) {
             // printf("(%d, %d) -> ", currentState[0], currentState[1]);
             step++;
         }
+        log[episode] = step;
     }
+
+    return log;
 }
 
-// Main Q-learning function
+// SARSA Q-learning function
 int* sarsaLearning(Maze maze, double*** qValues, int EPS) {
     int* log = (int*)malloc(sizeof(int) * EPS);
     srand(time(NULL)); // For random number generation

@@ -60,7 +60,7 @@ int main(){
     double*** qValues = createQValuesTable(maze.rows, maze.cols, maze);
 
     // Train the model using Q-learning
-    // qLearning(maze, qValues, 1000);
+    // int* log = qLearning(maze, qValues, 1000);
     
     int* log = sarsaLearning(maze, qValues, 1000);
     exportToFile(log, 1000, "Result.txt");
