@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 #include "utils.h"
 #include "dfs.h"
 
@@ -44,7 +45,11 @@ Maze build_maze(){
     return maze;
 }
 
-int main(){
+int main(int argc, char** argv){
+    if(argc != 2){
+        printf("Usage: %s <Learning method>\n", argv[0]);
+        return 1;
+    }
     // Read the maze file
     // Set the variables: mazeEnv, rows, cols, start_row, start_col, goal_row, goal_col
     mazeEnv_make("data/maze.txt");
@@ -58,16 +63,31 @@ int main(){
     Maze maze = build_maze();
 
     // Initialize Q-values
-    // double*** qValues = createQValuesTable(maze.rows, maze.cols, maze);
     double*** qValues1 = createQValuesTable(maze.rows, maze.cols, maze);
-    double*** qValues2 = createQValuesTable(maze.rows, maze.cols, maze);
+    double*** qValues2;
+    if(strcmp(argv[1], "basic") == 0){
+        printf("Use basic Q-learning\n");
+    }else if(strcmp(argv[1], "sarsa") == 0){
+        printf("Use SARSA Q-learning\n");
+    }else if(strcmp(argv[1], "double") == 0){
+        printf("Use Double Q-learning\n");
+        qValues2 = createQValuesTable(maze.rows, maze.cols, maze);
+    }else{
+        printf("Invalid learning method\n");
+        return 1;
+    }
 
     // Train the model using Q-learning
     int epochs = 1000;
     start = clock();
-    // int* log = qLearning(maze, qValues, 1000);
-    // int* log = sarsaLearning(maze, qValues, epochs);
-    int* log = doubleQLearning(maze, qValues1, qValues2, epochs);
+    int* log;
+    if(strcmp(argv[1], "basic") == 0){
+        log = qLearning(maze, qValues1, 1000);
+    }else if(strcmp(argv[1], "sarsa") == 0){
+        log = sarsaLearning(maze, qValues1, epochs);
+    }else if(strcmp(argv[1], "double") == 0){
+        log = doubleQLearning(maze, qValues1, qValues2, epochs);
+    }
     end = clock();
     exportToFile(log, epochs, "Result.txt");
     printf("Time taken: %f seconds\n", (double)(end - start) / CLOCKS_PER_SEC);
@@ -82,8 +102,13 @@ int main(){
     int failed = 0;
 
     while (maze.mazeEnv[currentState[0]][currentState[1]] != 'g' && steps < maze.rows * maze.cols / 2) {
-        // int action = chooseAction(currentState[0], currentState[1], qValues, maze, 0);
-        int action = chooseDoubleAction(currentState[0], currentState[1], qValues1, qValues2, maze, 0);
+        int action;
+        if(strcmp(argv[1], "double") == 0){
+            action = chooseDoubleAction(currentState[0], currentState[1], qValues1, qValues2, maze, 0);
+        }
+        else{
+            action = chooseAction(currentState[0], currentState[1], qValues1, maze, 0);
+        }
         printf("(%d, %d) -> ", currentState[0], currentState[1]);
         currentState[0] += directions[action][0];
         currentState[1] += directions[action][1];
@@ -103,7 +128,9 @@ int main(){
 
     // Free the memory allocated for the Q-values
     freeQValuesTable(qValues1, rows, cols);
-    freeQValuesTable(qValues2, rows, cols);
-
+    if(strcmp(argv[1], "double") == 0){
+        freeQValuesTable(qValues2, rows, cols);
+    }
+    
     return 0;
 }
