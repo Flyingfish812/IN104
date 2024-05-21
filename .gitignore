@@ -4,3 +4,7 @@ obj
 *.exe
 note.md
 *.pdf
+*.pptx
+*.docx
+*.ipynb
+*.txt
